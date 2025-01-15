@@ -1,10 +1,13 @@
 import 'package:animate_do/animate_do.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_slider_drawer/flutter_slider_drawer.dart';
 import 'package:lottie/lottie.dart';
 import 'package:todo_app/extensions/space_exs.dart';
 import 'package:todo_app/utils/app_colors.dart';
 import 'package:todo_app/utils/constants.dart';
 import 'package:todo_app/utils/strings.dart';
+import 'package:todo_app/view/home/components/home_app_bar.dart';
+import 'package:todo_app/view/home/components/slider_drawer.dart';
 import 'package:todo_app/view/home/widgets/fab.dart';
 import 'package:todo_app/view/home/widgets/task_widget.dart';
 
@@ -13,12 +16,21 @@ class HomeView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    GlobalKey<SliderDrawerState> drawerKey = GlobalKey<SliderDrawerState>();
     final List<int> testing = [1];
     var theme = Theme.of(context).textTheme;
     return Scaffold(
       backgroundColor: Colors.white,
       floatingActionButton: const Fab(),
-      body: _builderHomeBody(theme: theme, testing: testing),
+      body: SliderDrawer(
+          key: drawerKey,
+          isDraggable: false,
+          animationDuration: 1000,
+          slider: CustomeDrawer(),
+          appBar: HomeApppBar(
+            drawerKey: drawerKey,
+          ),
+          child: _builderHomeBody(theme: theme, testing: testing)),
     );
   }
 }
@@ -55,8 +67,7 @@ class _builderHomeBody extends StatelessWidget {
                     child: CircularProgressIndicator(
                       value: 1 / 3,
                       backgroundColor: Colors.grey,
-                      valueColor:
-                          AlwaysStoppedAnimation(MyColors.primaryColor),
+                      valueColor: AlwaysStoppedAnimation(MyColors.primaryColor),
                     ),
                   ),
                   25.w,
@@ -87,7 +98,7 @@ class _builderHomeBody extends StatelessWidget {
                 indent: 100,
               ),
             )
-    
+
             // tasks
             ,
             SizedBox(
