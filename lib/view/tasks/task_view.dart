@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:todo_app/extensions/space_exs.dart';
 import 'package:todo_app/utils/strings.dart';
+import 'package:todo_app/view/tasks/components/rep_textfield.dart';
+import 'package:todo_app/view/tasks/widget/dateTimePickerWidget.dart';
 import 'package:todo_app/view/tasks/widget/task_view_app_bar.dart';
+import 'package:todo_app/view/tasks/widget/time_picker.dart';
 
 class TaskView extends StatefulWidget {
   const TaskView({super.key});
@@ -24,21 +27,21 @@ class _TaskViewState extends State<TaskView> {
         FocusManager.instance.primaryFocus!.unfocus();
       },
       child: Scaffold(
-        appBar: TaskViewAppBar(),
+        appBar: const TaskViewAppBar(),
         body: SizedBox(
           width: double.infinity,
           height: double.infinity,
           child: SingleChildScrollView(
             child: Column(
               children: [
-                _buildTopSizeText(),
+                const _buildTopSizeText(),
                 SizedBox(
                   width: double.infinity,
                   height: 530,
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Padding(
+                      const Padding(
                         padding: EdgeInsets.only(left: 30),
                         child: Text(
                           MyString.titleOfTitleTextField,
@@ -46,7 +49,41 @@ class _TaskViewState extends State<TaskView> {
                       ),
                       repTextField(controller: titleTaskController),
                       10.h,
-                      repTextField(controller: descriptionTaskController , isForDescription: true,),
+                      repTextField(
+                        controller: descriptionTaskController,
+                        isForDescription: true,
+                      ),
+                      //time selection
+                      DateTimeSelection(
+                        onTap: () {
+                          showModalBottomSheet(
+                              context: context,
+                              builder: (_) => SizedBox(
+                                    height: 200,
+                                    child: TimePickerWidget(
+                                        onChanged: (_, __) {},
+                                        dateFormat: 'HH:mm',
+                                        onConfirm: (dateTime, _) {}),
+                                  ));
+                        },
+                        title: MyString.timeString,
+                      ),
+                      DateTimeSelection(
+                        onTap: () {
+                          showModalBottomSheet(
+                            context: context,
+                            builder: (_) => SizedBox(
+                              height: 300,
+                              child: DateTimePickerWidget(
+                                onConfirm: (dateTime, formattedDate) {
+                                  print('Selected Time: $formattedDate');
+                                },
+                              ),
+                            ),
+                          );
+                        },
+                        title: MyString.dateString,
+                      )
                     ],
                   ),
                 )
@@ -59,38 +96,50 @@ class _TaskViewState extends State<TaskView> {
   }
 }
 
-class repTextField extends StatelessWidget {
-  const repTextField({
+class DateTimeSelection extends StatelessWidget {
+  const DateTimeSelection({
     super.key,
-    required this.controller, this.isForDescription = false,
+    required this.onTap,
+    required this.title,
   });
-
-  final TextEditingController controller;
-  final bool isForDescription ;
-
+  final VoidCallback onTap;
+  final String title;
   @override
   Widget build(BuildContext context) {
-    return Container(
-      width: double.infinity,
-      margin: EdgeInsets.symmetric(horizontal: 16),
-      child: ListTile(
-        title: TextFormField(
-          controller: controller,
-          maxLines: 6,
-          cursorHeight: 60,
-          style: TextStyle(color: Colors.black),
-          decoration: InputDecoration(
-            enabledBorder: UnderlineInputBorder(
-              borderSide: BorderSide(
-                color: Colors.grey.shade400,
+    var textTheme = Theme.of(context).textTheme;
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        width: double.infinity,
+        margin: const EdgeInsets.all(20),
+        height: 55,
+        decoration: BoxDecoration(
+          color: Colors.white,
+          border: Border.all(color: Colors.grey.shade300),
+          borderRadius: BorderRadius.circular(15),
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Padding(
+              padding: EdgeInsets.only(left: 10),
+              child: Text(
+                title,
               ),
             ),
-            focusedBorder: UnderlineInputBorder(
-              borderSide: BorderSide(color: Colors.grey.shade400),
-            ),
-          ),
-          onFieldSubmitted: (value) {},
-          onChanged: (value) {},
+            Container(
+              width: 80,
+              margin: EdgeInsets.only(right: 10),
+              height: 35,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(10),
+                color: Colors.grey.shade100,
+              ),
+              child: const Center(
+                child: Text("Time"),
+              ),
+            )
+          ],
         ),
       ),
     );
